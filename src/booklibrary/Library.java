@@ -18,10 +18,10 @@ public class Library implements Serializable{
 		this.Bookstore = Bookstore;
 	}	
 	
-	public void giveBook(String title, String name){
+	public void giveBook(int bookId, int readerId){
 		
-		Book book = getBookFromBookstore(title);
-		BookReader reader= getReaderFromReadersList(name);
+		Book book = getBookFromBookstore(bookId);
+		BookReader reader= getReaderFromReadersList(readerId);
 		
 		OnHands.add(new BookOnHand(book,reader));
 		Bookstore.remove(book);
@@ -43,35 +43,35 @@ public class Library implements Serializable{
 	}
 	
 	public void showAvailableBooks(){
-		for(Book b: this.Bookstore){
-			System.out.println(b.getTitle());
+		for(Book b: Bookstore){
+			System.out.println(b.toString());
 		}
 	}
 	
 	public void showReaders(){
-		for(BookReader r: this.Readers){
-			System.out.println(r.getName());
+		for(BookReader r: Readers){
+			System.out.println(r.toString());
 		}
 	}
 	
 	public void showBooksOnHands(){
-		for(BookOnHand b: this.OnHands){
-			System.out.println(b.getTitle() + " " + b.getName());
+		for(BookOnHand b: OnHands){
+			System.out.println(b.toString());
 		}
 	}
 	
-	public Book getBookFromBookstore (String title){				
+	public Book getBookFromBookstore (int id){				
 		for (Book b: this.Bookstore){
-			if (b.getTitle().equals(title)){
+			if (b.getId() == id){
 				return b;
 			}
 		}		
 		return null;
 	}
 	
-	public BookReader getReaderFromReadersList (String name){
-		for (BookReader r: this.Readers){
-			if (r.getName().equals(name)){
+	public BookReader getReaderFromReadersList (int id){
+		for (BookReader r: Readers){
+			if ( r.getId() == id ){
 				return r;
 			}
 		}		
@@ -88,7 +88,7 @@ public class Library implements Serializable{
 			bookstore = "";
 		}else{
 			for(Book b: Bookstore){
-				bookstore += b.toString();
+				bookstore += b.toString() + "\n";
 			}
 		}		
 		
@@ -96,7 +96,7 @@ public class Library implements Serializable{
 			readers = "";
 		}else{
 			for(BookReader r: Readers){
-				readers += r.toString();
+				readers += r.toString() + "\n";
 			}
 		}
 		
@@ -104,7 +104,7 @@ public class Library implements Serializable{
 			onHands = "";
 		}else{
 			for(BookOnHand onHand: OnHands){
-				onHands += onHand.toString();
+				onHands += onHand.toString() + "\n";
 			}		
 		}
 		

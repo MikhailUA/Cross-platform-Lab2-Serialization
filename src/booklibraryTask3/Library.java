@@ -3,7 +3,9 @@ package booklibraryTask3;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -13,23 +15,69 @@ public class Library implements Externalizable{
 	private ArrayList<BookReader> Readers;
 	private ArrayList<BookOnHand> OnHands;
 	
-	public Library(){System.out.println("constr");}
+	public Library(){}
 	
 	public Library(ArrayList<BookReader> Readers, ArrayList<Book> Bookstore){
-		this.OnHands = new ArrayList<BookOnHand>();
-		
 		this.Readers = Readers;
 		this.Bookstore = Bookstore;
+		
+		this.OnHands = new ArrayList<BookOnHand>();
 	}	
 	
-	public void giveBook(String title, String name){
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
 		
-		Book book = getBookFromBookstore(title);
-		BookReader reader= getReaderFromReadersList(name);
+		int s = (int) in.readObject();
+		this.Bookstore = new ArrayList<Book>(); 
+		for (int i=0; i < s; i++){
+			Book b = new Book();
+			b.readExternal(in);
+			Bookstore.add(b);
+		}
+		
+		s = (int) in.readObject();
+		this.Readers = new ArrayList<BookReader>();
+		for (int i=0; i < s; i++){
+			BookReader reader = new BookReader();
+			reader.readExternal(in);
+			Readers.add(reader);
+		}
+		
+		s = (int) in.readObject();
+		this.OnHands = new ArrayList<BookOnHand>();
+		for (int i=0; i < s; i++){
+			BookOnHand h = new BookOnHand();
+			h.readExternal(in);
+			OnHands.add(h);
+		}
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeObject(Bookstore.size());
+		for (Book b: Bookstore){
+			b.writeExternal(out);
+		}
+		
+		out.writeObject(Readers.size());
+		for (BookReader r: Readers){
+			r.writeExternal(out);
+		}
+		
+		out.writeObject(OnHands.size());
+		for (BookOnHand h : OnHands){
+			h.writeExternal(out);
+		}
+	}
+	
+	public void giveBook(int bookId, int readerId){
+		
+		Book book = getBookFromBookstore(bookId);
+		BookReader reader= getReaderFromReadersList(readerId);
 		
 		OnHands.add(new BookOnHand(book,reader));
 		Bookstore.remove(book);
-
 	}
 	
 	public void returnBook(Book title, BookReader reader){
@@ -47,35 +95,35 @@ public class Library implements Externalizable{
 	}
 	
 	public void showAvailableBooks(){
-		for(Book b: this.Bookstore){
-			System.out.println(b.getTitle());
+		for(Book b: Bookstore){
+			System.out.println(b.toString());
 		}
 	}
 	
 	public void showReaders(){
-		for(BookReader r: this.Readers){
-			System.out.println(r.getName());
+		for(BookReader r: Readers){
+			System.out.println(r.toString());
 		}
 	}
 	
 	public void showBooksOnHands(){
-		for(BookOnHand b: this.OnHands){
-			System.out.println(b.getTitle() + " " + b.getName());
+		for(BookOnHand b: OnHands){
+			System.out.println(b.toString());
 		}
 	}
 	
-	public Book getBookFromBookstore (String title){				
+	public Book getBookFromBookstore (int id){				
 		for (Book b: this.Bookstore){
-			if (b.getTitle().equals(title)){
+			if (b.getId() == id){
 				return b;
 			}
 		}		
 		return null;
 	}
 	
-	public BookReader getReaderFromReadersList (String name){
-		for (BookReader r: this.Readers){
-			if (r.getName().equals(name)){
+	public BookReader getReaderFromReadersList (int id){
+		for (BookReader r: Readers){
+			if ( r.getId() == id ){
 				return r;
 			}
 		}		
@@ -92,7 +140,7 @@ public class Library implements Externalizable{
 			bookstore = "";
 		}else{
 			for(Book b: Bookstore){
-				bookstore += b.toString();
+				bookstore += b.toString() + "\n";
 			}
 		}		
 		
@@ -100,7 +148,7 @@ public class Library implements Externalizable{
 			readers = "";
 		}else{
 			for(BookReader r: Readers){
-				readers += r.toString();
+				readers += r.toString() + "\n";
 			}
 		}
 		
@@ -108,7 +156,7 @@ public class Library implements Externalizable{
 			onHands = "";
 		}else{
 			for(BookOnHand onHand: OnHands){
-				onHands += onHand.toString();
+				onHands += onHand.toString() + "\n";
 			}		
 		}
 		
@@ -119,55 +167,4 @@ public class Library implements Externalizable{
 		return classRepresentation;		
 	}
 
-	@Override
-	public void readExternal(ObjectInput in) throws IOException,
-			ClassNotFoundException {
-		System.out.println("readEx");
-		Bookstore = new ArrayList<Book>();
-		System.out.println("readEx2");
-		int bookstoreSize = in.readInt();
-		System.out.println("readEx3");
-		for (int i = 0; i < bookstoreSize; i++){
-			Book book = new Book();
-			book.readExternal(in);
-			Bookstore.add(book);
-		}
-		
-		Readers = new ArrayList<>();
-		int readersSize = in.readInt();
-		for (int i = 0; i < readersSize; i++){
-			BookReader bookreader = new BookReader();
-			bookreader.readExternal(in);
-			Readers.add(bookreader);
-		}
-		
-		OnHands = new ArrayList<>();
-		int onhandsSize = in.readInt();
-		for (int i = 0; i < onhandsSize; i++){
-			BookOnHand bookonhand = new BookOnHand();
-			bookonhand.readExternal(in);
-			OnHands.add(bookonhand);
-		}
-				
-	}
-
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		
-		out.writeInt(Bookstore.size());
-		for (Externalizable b : Bookstore){
-			b.writeExternal(out);
-		}
-		
-		out.writeInt(Readers.size());
-		for (Externalizable r : Readers){
-			r.writeExternal(out);
-		}
-				
-		out.writeInt(OnHands.size());
-		for (Externalizable h : OnHands){
-			h.writeExternal(out);
-		}
-		
-	}
 }

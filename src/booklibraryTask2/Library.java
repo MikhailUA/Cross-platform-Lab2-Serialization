@@ -8,6 +8,10 @@ import java.util.ArrayList;
 
 public class Library implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	transient private ArrayList<Book> Bookstore;
 	transient private ArrayList<BookReader> Readers;
 	transient private ArrayList<BookOnHand> OnHands;
@@ -15,68 +19,91 @@ public class Library implements Serializable{
 	public Library(){}
 	
 	public Library(ArrayList<BookReader> Readers, ArrayList<Book> Bookstore){
-		this.OnHands = new ArrayList<BookOnHand>();
-		
 		this.Readers = Readers;
 		this.Bookstore = Bookstore;
+		
+		this.OnHands = new ArrayList<BookOnHand>();
 	}	
 	
-	
 	private void writeObject(ObjectOutputStream out) throws IOException{
+		
 		out.defaultWriteObject();
-		out.writeInt(Readers.size());
-		for(BookReader r : Readers){
-			out.writeObject(r.getName());			
+		
+		out.writeObject(Readers.size());
+		for(BookReader r : Readers){			
+			out.writeObject(r.getId());
+			out.writeObject(r.getFirstname());
+			out.writeObject(r.getSurname());
 		}
 		
-		out.writeInt(Bookstore.size());
+		out.writeObject(Bookstore.size());
 		for(Book b : Bookstore){
+			out.writeObject(b.getId());
 			out.writeObject(b.getTitle());
+			out.writeObject(b.getAuthor().firstname);
+			out.writeObject(b.getAuthor().surname);
 		}
 		
-		out.writeInt(OnHands.size());
+		out.writeObject(OnHands.size());
 		for (BookOnHand b : OnHands){
-			out.writeObject(b.getTitle());
-			out.writeObject(b.getName());
-		}
+			Book book = b.getBook();
+			out.writeObject(book.getId());
+			out.writeObject(book.getTitle());
+			out.writeObject(book.getAuthor().firstname);
+			out.writeObject(book.getAuthor().surname);
+						
+			BookReader reader = b.getReader();
+			out.writeObject(reader.getId());
+			out.writeObject(reader.firstname);
+			out.writeObject(reader.surname);
+		}			
+			
 	}
 	
 	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException{
 		in.defaultReadObject();
+		
 		Readers = new ArrayList<>();
-		int size = in.readInt();
+		int size = (Integer) in.readObject();
 		for (int i = 0; i < size; i++){
-			BookReader reader = new BookReader((String) in.readObject());
+			BookReader reader = new BookReader();
+			reader.setId((Integer)in.readObject());
+			reader.setFirstname((String) in.readObject());
+			reader.setSurname((String) in.readObject());
 			Readers.add(reader);
 		}
 		
 		Bookstore = new ArrayList<>();
-		int bookStoreSize = in.readInt();
+		int bookStoreSize = (Integer) in.readObject();
 		for (int i = 0; i < bookStoreSize; i++){
-			Book b = new Book ((String) in.readObject());
+			Book b = new Book ();
+			b.setId((Integer)in.readObject());
+			b.setTitle((String)in.readObject());
+			b.setAuthor(new Author((String) in.readObject(), (String) in.readObject()));
 			Bookstore.add(b);
 		}
 		
 		OnHands = new ArrayList<>();
-		int onHandsSize = in.readInt();
+		int onHandsSize = (Integer)in.readObject();
 		for (int i = 0; i < onHandsSize; i++){
-			Book book = new Book((String) in.readObject());
-			BookReader reader = new BookReader((String) in.readObject());
-			BookOnHand b = new BookOnHand(book, reader);			
+			Book b = new Book ();
+			b.setId((Integer)in.readObject());
+			b.setTitle((String)in.readObject());
+			b.setAuthor(new Author((String) in.readObject(), (String) in.readObject()));			
+			BookReader reader = new BookReader((Integer)in.readObject(), (String) in.readObject(), (String) in.readObject());
+		
+			BookOnHand bookOnHand = new BookOnHand(b, reader);			
 		}
 		
-	}
+	}	
 	
-	
-	
-	public void giveBook(String title, String name){
+	public void giveBook(int bookId, int readerId){
 		
-		Book book = getBookFromBookstore(title);
-		BookReader reader= getReaderFromReadersList(name);
+		Book book = getBookFromBookstore(bookId);
+		BookReader reader= getReaderFromReadersList(readerId);
 		
 		OnHands.add(new BookOnHand(book,reader));
 		Bookstore.remove(book);
-
 	}
 	
 	public void returnBook(Book title, BookReader reader){
@@ -94,35 +121,35 @@ public class Library implements Serializable{
 	}
 	
 	public void showAvailableBooks(){
-		for(Book b: this.Bookstore){
-			System.out.println(b.getTitle());
+		for(Book b: Bookstore){
+			System.out.println(b.toString());
 		}
 	}
 	
 	public void showReaders(){
-		for(BookReader r: this.Readers){
-			System.out.println(r.getName());
+		for(BookReader r: Readers){
+			System.out.println(r.toString());
 		}
 	}
 	
 	public void showBooksOnHands(){
-		for(BookOnHand b: this.OnHands){
-			System.out.println(b.getTitle() + " " + b.getName());
+		for(BookOnHand b: OnHands){
+			System.out.println(b.toString());
 		}
 	}
 	
-	public Book getBookFromBookstore (String title){				
+	public Book getBookFromBookstore (int id){				
 		for (Book b: this.Bookstore){
-			if (b.getTitle().equals(title)){
+			if (b.getId() == id){
 				return b;
 			}
 		}		
 		return null;
 	}
 	
-	public BookReader getReaderFromReadersList (String name){
-		for (BookReader r: this.Readers){
-			if (r.getName().equals(name)){
+	public BookReader getReaderFromReadersList (int id){
+		for (BookReader r: Readers){
+			if ( r.getId() == id ){
 				return r;
 			}
 		}		
@@ -139,7 +166,7 @@ public class Library implements Serializable{
 			bookstore = "";
 		}else{
 			for(Book b: Bookstore){
-				bookstore += b.toString();
+				bookstore += b.toString() + "\n";
 			}
 		}		
 		
@@ -147,7 +174,7 @@ public class Library implements Serializable{
 			readers = "";
 		}else{
 			for(BookReader r: Readers){
-				readers += r.toString();
+				readers += r.toString() + "\n";
 			}
 		}
 		
@@ -155,7 +182,7 @@ public class Library implements Serializable{
 			onHands = "";
 		}else{
 			for(BookOnHand onHand: OnHands){
-				onHands += onHand.toString();
+				onHands += onHand.toString() + "\n";
 			}		
 		}
 		

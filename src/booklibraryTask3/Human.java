@@ -1,12 +1,9 @@
-package booklibrary;
+package booklibraryTask3;
 
+import java.io.Externalizable;
 import java.io.Serializable;
 
-abstract public class Human implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+abstract public class Human implements Externalizable{
 	public String firstname;
 	public String surname;
 	

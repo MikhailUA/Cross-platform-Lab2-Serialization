@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 public class Library implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Book> Bookstore;
 	private ArrayList<BookReader> Readers;
 	private ArrayList<BookOnHand> OnHands;

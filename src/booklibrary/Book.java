@@ -2,11 +2,15 @@ package booklibrary;
 
 import java.io.Serializable;
 
-public class Book implements Serializable {
+public class Book implements Serializable {	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
-	private String title;
 	private Author author;
+	private String title;
 
 	public Book(int id, String title, Author author) {
 		this.id = id;

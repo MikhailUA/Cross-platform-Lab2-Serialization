@@ -1,12 +1,7 @@
-package booklibrary;
+package booklibraryTask2;
 
-import java.io.Serializable;
 
-abstract public class Human implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+abstract public class Human{
 	public String firstname;
 	public String surname;
 	

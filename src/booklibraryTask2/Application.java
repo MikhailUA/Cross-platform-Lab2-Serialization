@@ -1,6 +1,5 @@
 package booklibraryTask2;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -9,15 +8,15 @@ public class Application{
 	public static void main(String[] args) {
 		
 		ArrayList<Book> Bookstore = new ArrayList<Book>();
-		Bookstore.add(new Book("book1"));
-		Bookstore.add(new Book("book2"));
-		Bookstore.add(new Book("book3"));
-		Bookstore.add(new Book("book4"));
+		Bookstore.add(new Book(1, "book1", new Author("first1", "surname2")));
+		Bookstore.add(new Book(2, "book2", new Author("first3", "surname1")));
+		Bookstore.add(new Book(3, "book3", new Author("first4", "surname5")));
+		Bookstore.add(new Book(4, "book4", new Author("first1", "surname3")));
 		
 		ArrayList<BookReader> Readers = new ArrayList<BookReader>();
-		Readers.add(new BookReader("reader1"));
-		Readers.add(new BookReader("reader2"));
-		Readers.add(new BookReader("reader3"));		
+		Readers.add(new BookReader(1, "reader1" , "surn9"));
+		Readers.add(new BookReader(2, "reader2" , "surn10"));
+		Readers.add(new BookReader(3, "reader3" , "surn11"));		
 		
 		Library library = new Library(Readers, Bookstore);
 		
@@ -42,25 +41,27 @@ public class Application{
 			
 				case 0 :
 					System.exit(0);
-					break;
+				break;
 				
 				case 1 :
 					library.showAvailableBooks();
-					break;		
+				break;		
 				
 				case 2 :
 					library.showReaders();
-					break;
+				break;
 				
 				case 3 :
-					String title = scn.next();
-					String name = scn.next();
-					library.giveBook(title, name);
-					break;
+					System.out.println("¬ведите id книги");
+					int bookId = scn.nextInt();
+					System.out.println("¬ведите id читател€");
+					int readerId = scn.nextInt();
+					library.giveBook(bookId, readerId);
+				break;
 				
 				case 4 :
 					library.showBooksOnHands();
-					break;
+				break;
 				
 				case 5 :
 					LibraryDriver.serializeObject("libraryTask2.txt", library);
@@ -69,7 +70,11 @@ public class Application{
 				case 6 :
 					library = (Library) LibraryDriver.deSerializeObject("libraryTask2.txt");
 					break;
-			}			
-		}		
+			}
+			
+			
+		}	
+		
 	}
+
 }

@@ -3,6 +3,11 @@ package booklibrary;
 import java.io.Serializable;
 
 public class BookOnHand implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Book title;
 	private BookReader reader;
 	
